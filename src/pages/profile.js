@@ -29,7 +29,7 @@ const Profile = () => {
       <Button mt={10}>Deposit now</Button>
       <Button mt={10}>Harvest and Donate</Button>
 
-      <Text color="white" fontSize="md" mt={10}>Total donated so far: {totalDonated} ETH / ~{etherPrice} DAI</Text>
+      <Text color="white" fontSize="md" mt={10}>Total donated so far: {totalDonated * totalDonated} ETH / ~{etherPrice} DAI</Text>
     </Flex>
   )
 }
