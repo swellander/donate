@@ -46,3 +46,24 @@ main {
   height: 56px !important;
   font-size: 14px !important;
 }
+
+.Particle {
+  min-width: 100vw;
+  min-height: 100vh;
+  cursor: pointer;
+  background: inherit;
+
+  touch-action: none;
+
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  position: fixed;
+}
+
+/*.Particle span {*/
+/*  display: inline-block;*/
+/*  transform: scale(1.5) rotate(10deg) translate(2px, 1px);*/
+/*}*/
