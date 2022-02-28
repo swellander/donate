@@ -16,7 +16,6 @@ import {
 } from '@chakra-ui/react'
 import { SetStateAction, useEffect, useState } from 'react'
 import axios from 'axios'
-import { getEnsAddress } from '@ensdomains/ensjs'
 
 const localisation = {
   en: {
@@ -26,24 +25,6 @@ const localisation = {
     title: 'Classement'
   }
 }
-
-const testingLeaderboardData = [
-  {
-    ens: 'ukraine.eth',
-    address: '0x12345',
-    value: 3.21
-  },
-  {
-    ens: 'vitalik.eth',
-    address: '0x67890',
-    value: 2.29
-  },
-  {
-    ens: 'mikedemaris.eth',
-    address: '0xabcdef',
-    value: 2.21
-  }
-]
 
 const RECEIVER_WALLET = '0x10E1439455BD2624878b243819E31CfEE9eb721C'
 
@@ -83,19 +64,18 @@ const Leaderboard: NextPage = () => {
     ) => SetStateAction<never[]>
   }) => {
     setLeaders(
-      arrayOfTransactions
-        ?.slice(0, 50)
-        ?.sort(
-          (a: { value: number }, b: { value: number }) => b?.value - a?.value
-        )
+      arrayOfTransactions?.sort(
+        (a: { value: number }, b: { value: number }) => b?.value - a?.value
+        // @ts-ignore
+      )
     )
   }
 
   return (
     <Flex
       direction="row"
-      width="100vw"
-      minHeight="100vh"
+      width="100%"
+      height="100%"
       alignItems="center"
       justifyContent="center"
     >
@@ -119,37 +99,33 @@ const Leaderboard: NextPage = () => {
             <Table variant="striped" colorScheme="whiteAlpha">
               <Thead>
                 <Tr>
-                  <Th></Th>
-                  <Th></Th>
-                  <Th isNumeric></Th>
+                  <Th />
+                  <Th />
+                  <Th isNumeric />
                 </Tr>
               </Thead>
               <Tbody>
-                {leaders?.map((data, i) => {
-                  return (
-                    <Tr key={i}>
-                      <Td color="white">
-                        <Stat>
-                          <StatNumber>#{i + 1}</StatNumber>
-                          <StatHelpText>{` `}</StatHelpText>
-                        </Stat>
-                      </Td>
-                      <Td color="white">
-                        <Stat>
-                          <StatNumber>{data?.from}</StatNumber>
-                          {/*TODO maybe come fix this?*/}
-                          {/*<StatHelpText>{getEnsAddress(data?.from)}</StatHelpText>*/}
-                        </Stat>
-                      </Td>
-                      <Td isNumeric color="white">
-                        <Stat>
-                          <StatNumber>Ξ {data?.value}</StatNumber>
-                          <StatHelpText>Donated</StatHelpText>
-                        </Stat>
-                      </Td>
-                    </Tr>
-                  )
-                })}
+                {leaders?.map((data: { from: string; value: number }, i) => (
+                  <Tr key={i}>
+                    <Td color="white">
+                      <Stat>
+                        <StatNumber>#{i + 1}</StatNumber>
+                        <StatHelpText>{` `}</StatHelpText>
+                      </Stat>
+                    </Td>
+                    <Td color="white">
+                      <Stat>
+                        <StatNumber>{data?.from}</StatNumber>
+                      </Stat>
+                    </Td>
+                    <Td isNumeric color="white">
+                      <Stat>
+                        <StatNumber>Ξ {data?.value}</StatNumber>
+                        <StatHelpText>Donated</StatHelpText>
+                      </Stat>
+                    </Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
           )}

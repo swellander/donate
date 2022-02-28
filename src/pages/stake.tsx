@@ -196,7 +196,7 @@ export default function Deposit() {
         <DetailsBox mode={stakingMode} />
       </Flex>
 
-      <Flex flexDirection="column" align="center" justify="center"></Flex>
+      <Flex flexDirection="column" align="center" justify="center" />
       <Flex flexDirection="column" align="end">
         <Text color="white" fontSize="30px">
           Looking to donate instead?
@@ -408,6 +408,7 @@ const YourDeposits = () => (
           flexDirection="column"
           alignItems="center"
           justifyContent="space-evenly"
+          key={index}
         >
           <Text fontWeight="bold" fontSize="36px" color="white">
             {(Math.random() * 100).toFixed(2)}
