@@ -9,23 +9,29 @@ import {
   MenuList,
   MenuItem,
   Menu,
-  MenuButton
+  MenuButton,
+  Input,
+  MenuOptionGroup,
+  Select
 } from '@chakra-ui/react'
 import { ChevronDownIcon, LoginIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
 import CoinList from '../assets/tokenlist.json'
+import { ethers } from 'ethers'
 
-const Tokens = CoinList.tokens
+interface IToken {
+  decimals: number
+  symbol: string
+  logoURI: string
+  address: string
+  chainId: number
+}
+const id = 1
+const Tokens: IToken[] = CoinList.tokens
 const assetList = ['WETH', 'ETH', 'WBTC', 'USDC', 'USDT', 'DAI']
-const TokenSymbols = Tokens.reduceRight(
-  (prev: any, { symbol, logoURI, address }) => {
-    if (assetList.includes(symbol)) {
-      prev[symbol] = { logoURI, address }
-    }
-    return prev
-  },
-  {}
-)
+const supportedTokens = Tokens.filter((token) => {
+  return token.chainId === id && assetList.includes(token.symbol)
+})
 
 enum DepositMode {
   WITHDRAW,
@@ -38,7 +44,8 @@ interface Props {
 
 export default function Deposit() {
   const { activateBrowserWallet, ens, account, etherBalance } = useWallet()
-
+  const [amount, setAmount] = useState<number>()
+  const [selectedToken, setSelectedToken] = useState<IToken>()
   const [stakingMode, setStakingMode] = useState<DepositMode>(
     DepositMode.DEPOSIT
   )
@@ -51,6 +58,15 @@ export default function Deposit() {
     }
   }
 
+  function handleStakeClicked() {
+    const amountWei = ethers.utils.parseUnits(
+      amount?.toString(),
+      selectedToken?.decimals
+    )
+
+    console.log('amount wei', amountWei.toString())
+  }
+
   return (
     <SimpleGrid
       columns={{
@@ -61,10 +77,50 @@ export default function Deposit() {
       }}
       spacing={10}
     >
-      <Flex flexDirection="column" align="center" justify="center" width="50vw">
+      <Flex
+        flexDirection="column"
+        align="center"
+        justify="center"
+        width={{ base: '50vw', lg: '100%', md: '100%', sm: '100%' }}
+      >
         <RedeemSwitch onChange={tabChanged} />
         <DepositBox mode={stakingMode}>
-          <BoxDepositBox />
+          <Box
+            backgroundColor="rgba(255,255,255,0.2)"
+            width="455px"
+            height="140px"
+            borderRadius="20px"
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-around"
+          >
+            <Box color="white">
+              {stakingMode === DepositMode.DEPOSIT ? (
+                <Input
+                  fontSize="36px"
+                  type="number"
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                  value={amount}
+                  width="80%"
+                  margin="10px"
+                />
+              ) : (
+                <>
+                  <Text fontSize="36px">0.05</Text>
+                </>
+              )}
+              <Text color="#DADADA"> balance: 0.02</Text>
+            </Box>
+
+            <Box color="white">
+              <AssetMenu
+                onChange={(token) => {
+                  setSelectedToken(token)
+                }}
+              />
+            </Box>
+          </Box>
           {stakingMode === DepositMode.DEPOSIT ? (
             <>
               <Button
@@ -73,6 +129,7 @@ export default function Deposit() {
                 color="white"
                 width="455px"
                 height="80px"
+                onClick={handleStakeClicked}
               >
                 <Text fontSize="3xl"> Stake </Text>
               </Button>
@@ -234,48 +291,8 @@ const DepositBox = ({ children, mode }: DepositBoxProps) => (
   </Box>
 )
 
-const BoxDepositBox = () => (
-  <Box
-    backgroundColor="rgba(255,255,255,0.2)"
-    width="455px"
-    height="140px"
-    borderRadius="20px"
-    display="flex"
-    flexDirection="row"
-    alignItems="center"
-    justifyContent="space-around"
-  >
-    <Box color="white">
-      <Text fontSize="36px">0.05</Text>
-      <Text color="#DADADA"> balance: 0.02</Text>
-    </Box>
-
-    <Box color="white">
-      <AssetMenu />
-    </Box>
-  </Box>
-)
-
-enum Assets {
-  weth = 'WETH',
-  eth = 'ETH',
-  usdc = 'USDC',
-  usdt = 'USDT',
-  dai = 'DAI',
-  btc = 'WBTC'
-}
-
-const eth_2_assets = {
-  WETH: { text: 'WETH' },
-  ETH: { text: 'ETH' },
-  USDC: { text: 'USDC' },
-  USDT: { text: 'USDT' },
-  DAI: { text: 'DAI' },
-  WBTC: { text: 'WBTC' }
-}
-
-const AssetMenu = () => {
-  const [selected, select] = useState<Assets>(Assets.eth)
+const AssetMenu = ({ onChange }: { onChange: (token: IToken) => void }) => {
+  const [selected, select] = useState<IToken>(supportedTokens[0])
 
   return (
     <Menu>
@@ -302,12 +319,12 @@ const AssetMenu = () => {
             >
               <img
                 style={{ borderRadius: '50%' }}
-                src={TokenSymbols[selected].logoURI}
-                alt={selected}
+                src={selected.logoURI}
+                alt={selected.symbol}
                 width="20%"
               />
 
-              {eth_2_assets[selected].text}
+              {selected.symbol}
 
               <ChevronDownIcon width="25px" />
             </Box>
@@ -317,18 +334,23 @@ const AssetMenu = () => {
             backgroundColor="#5c8abc"
             _active={{ bg: '5c8abc' }}
             _focus={{ bg: '#5c8abc' }}
+            onChange={() => console.log('onChange')}
           >
-            {Object.values(Assets).map((val) => (
-              <MenuItem
-                _focus={{ bg: '#5c8abc' }}
-                _active={{ bg: '5c8abc' }}
-                _hover={{ bg: '#5c8abc' }}
-                onClick={(_) => select(val)}
-              >
-                {' '}
-                {val}{' '}
-              </MenuItem>
-            ))}
+            <MenuOptionGroup onChange={(e) => console.log('change', e)}>
+              {Object.values(supportedTokens).map((token) => (
+                <MenuItem
+                  _focus={{ bg: '#5c8abc' }}
+                  _active={{ bg: '5c8abc' }}
+                  _hover={{ bg: '#5c8abc' }}
+                  onClick={(_) => {
+                    select(token)
+                    onChange(token)
+                  }}
+                >
+                  {token.symbol}
+                </MenuItem>
+              ))}
+            </MenuOptionGroup>
           </MenuList>
         </>
       )}
@@ -344,7 +366,7 @@ const YourDeposits = () => (
     </Text>
 
     <Flex flexDirection={'row'} wrap="wrap" gap={4}>
-      {Object.values(Assets).map((asset: string) => (
+      {Object.values(supportedTokens).map((asset: IToken) => (
         <Flex
           backgroundColor="#004B9B"
           width="160px"
@@ -360,7 +382,7 @@ const YourDeposits = () => (
             {(Math.random() * 100).toFixed(2)}
           </Text>
           <Text fontSize="16px" color="white">
-            {asset}
+            {asset.symbol}
           </Text>
         </Flex>
       ))}
