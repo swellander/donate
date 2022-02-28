@@ -14,7 +14,11 @@ import {
   MenuOptionGroup,
   Select
 } from '@chakra-ui/react'
-import { ChevronDownIcon, LoginIcon } from '@heroicons/react/outline'
+import {
+  ChevronDownIcon,
+  LibraryIcon,
+  LoginIcon
+} from '@heroicons/react/outline'
 import { useState } from 'react'
 import CoinList from '../assets/tokenlist.json'
 import { ethers } from 'ethers'
@@ -35,7 +39,7 @@ interface IToken {
   address: string
   chainId: number
 }
-const id = 3
+const id = 1
 const Tokens: IToken[] = CoinList.tokens
 const assetList = ['WETH', 'ETH', 'WBTC', 'USDC', 'USDT', 'DAI']
 const supportedTokens = Tokens.filter((token) => {
@@ -58,10 +62,13 @@ export default function Deposit() {
   const { activateBrowserWallet, ens, account, active, etherBalance, library } =
     useWallet()
   useEffect(() => {
-    if (process.env.CHAIN_ID! == String(library.network.chainId)) {
-      alert('MUST SWIXTCH VHAINS')
+    if (
+      active &&
+      process.env.NEXT_PUBLIC_CHAIN_ID! != String(library?.network.chainId)
+    ) {
+      alert('MUST SWITCH CHAINS')
     }
-  }, [library.network])
+  }, [LibraryIcon])
 
   const am = useTokenBalance(selectedToken.address, account!)
 
@@ -135,7 +142,9 @@ export default function Deposit() {
                 />
               ) : (
                 <>
-                  <Text fontSize="36px">{am || ''}</Text>
+                  <Text fontSize="36px">
+                    {am != undefined ? am.toString() : ''}
+                  </Text>
                 </>
               )}
               <Text color="#DADADA"> balance: {amount}</Text>
