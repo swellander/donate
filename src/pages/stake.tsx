@@ -21,6 +21,7 @@ import { ethers } from 'ethers'
 import { YieldDonateService } from '../services/YieldDonateService'
 import { Web3Provider } from '@ethersproject/providers'
 import { useEffect } from 'react'
+import { useTokenBalance } from '@usedapp/core'
 
 //@ts-ignore
 // const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -34,7 +35,7 @@ interface IToken {
   address: string
   chainId: number
 }
-const id = 1
+const id = 3
 const Tokens: IToken[] = CoinList.tokens
 const assetList = ['WETH', 'ETH', 'WBTC', 'USDC', 'USDT', 'DAI']
 const supportedTokens = Tokens.filter((token) => {
@@ -52,10 +53,20 @@ interface Props {
 
 export default function Deposit() {
   const [amount, setAmount] = useState<number>()
-  const [selectedToken, setSelectedToken] = useState<IToken>()
+  const [selectedToken, setSelectedToken] = useState<IToken>(supportedTokens[0])
   const [service, setService] = useState<YieldDonateService>()
   const { activateBrowserWallet, ens, account, active, etherBalance, library } =
     useWallet()
+  useEffect(() => {
+    if (process.env.CHAIN_ID! == String(library.network.chainId)) {
+      alert('MUST SWIXTCH VHAINS')
+    }
+  }, [library.network])
+
+  const am = useTokenBalance(selectedToken.address, account!)
+
+  console.log({ am })
+
   useEffect(() => {
     if (active) {
       const s = new YieldDonateService(library as Web3Provider)
@@ -124,10 +135,10 @@ export default function Deposit() {
                 />
               ) : (
                 <>
-                  <Text fontSize="36px">0.05</Text>
+                  <Text fontSize="36px">{am || ''}</Text>
                 </>
               )}
-              <Text color="#DADADA"> balance: 0.02</Text>
+              <Text color="#DADADA"> balance: {amount}</Text>
             </Box>
 
             <Box color="white">
@@ -310,6 +321,9 @@ const DepositBox = ({ children, mode }: DepositBoxProps) => (
 
 const AssetMenu = ({ onChange }: { onChange: (token: IToken) => void }) => {
   const [selected, select] = useState<IToken>(supportedTokens[0])
+  const [amount, setAmount] = useState<undefined | ethers.BigNumber>()
+
+  // setAmount(am)
 
   return (
     <Menu>
