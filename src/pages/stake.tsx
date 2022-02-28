@@ -14,6 +14,14 @@ import {
 import { ChevronDownIcon, LoginIcon } from '@heroicons/react/outline'
 import { useState } from 'react'
 import CoinList from '../assets/tokenlist.json'
+import { YieldDonateService } from '../services/YieldDonateService'
+import { Web3Provider } from '@ethersproject/providers'
+import { useEffect } from 'react'
+
+//@ts-ignore
+// const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+// const provider = new ethers.providers.Web3Provider(Web3.currentProvider);
 
 const Tokens = CoinList.tokens
 const assetList = ['WETH', 'ETH', 'WBTC', 'USDC', 'USDT', 'DAI']
@@ -37,7 +45,15 @@ interface Props {
 }
 
 export default function Deposit() {
-  const { activateBrowserWallet, ens, account, etherBalance } = useWallet()
+  const [service, setService] = useState<YieldDonateService>()
+  const { activateBrowserWallet, ens, account, active, etherBalance, library } =
+    useWallet()
+  useEffect(() => {
+    if (active) {
+      const s = new YieldDonateService(library as Web3Provider)
+      setService(s)
+    }
+  }, [active])
 
   const [stakingMode, setStakingMode] = useState<DepositMode>(
     DepositMode.DEPOSIT

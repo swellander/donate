@@ -7,7 +7,7 @@ import { Root } from '../components/Root'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <DAppProvider config={{}}>
+    <DAppProvider config={{ readOnlyChainId: 3 }}>
       <WalletProvider>
         <ChakraProvider>
           <Root>

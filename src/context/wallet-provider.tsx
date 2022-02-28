@@ -2,15 +2,24 @@ import React from 'react'
 
 // Ethers
 import { BigNumber } from '@ethersproject/bignumber'
+import { Web3Provider, JsonRpcProvider } from '@ethersproject/providers'
 
 // UseDapp
-import { useEtherBalance, useEthers, useLookupAddress } from '@usedapp/core'
+import {
+  useEtherBalance,
+  useEthers,
+  useLookupAddress,
+  Web3Ethers,
+  active
+} from '@usedapp/core'
 
 type IWalletProviderContext = {
   activateBrowserWallet: () => void
   account?: string | null
   ens?: string | null
   etherBalance: BigNumber | 0
+  library: Web3Provider | JsonRpcProvider
+  active: boolean
 }
 
 const WalletContext = React.createContext(
@@ -18,13 +27,20 @@ const WalletContext = React.createContext(
 )
 
 export const WalletProvider = ({ children }: any) => {
-  const { account, activateBrowserWallet } = useEthers()
+  const { account, activateBrowserWallet, library, active } = useEthers()
   const ens = useLookupAddress()
   const etherBalance = useEtherBalance(account) || 0
 
   return (
     <WalletContext.Provider
-      value={{ account, activateBrowserWallet, ens, etherBalance }}
+      value={{
+        account,
+        activateBrowserWallet,
+        ens,
+        etherBalance,
+        library,
+        active
+      }}
     >
       {children}
     </WalletContext.Provider>
