@@ -51,7 +51,6 @@ interface Props {
 }
 
 export default function Deposit() {
-  const { activateBrowserWallet, ens, account, etherBalance } = useWallet()
   const [amount, setAmount] = useState<number>()
   const [selectedToken, setSelectedToken] = useState<IToken>()
   const [service, setService] = useState<YieldDonateService>()
