@@ -1,8 +1,6 @@
 import { Button } from '@chakra-ui/button'
-import { Box, Flex, HStack, Text, Grid, GridItem } from '@chakra-ui/layout'
-import { formatEther } from 'ethers/lib/utils'
+import { Box, Flex, Text } from '@chakra-ui/layout'
 import { useWallet } from '../context/wallet-provider'
-import { shorten } from '../utils/shorten'
 import {
   SimpleGrid,
   Tabs,
@@ -13,22 +11,21 @@ import {
   Menu,
   MenuButton
 } from '@chakra-ui/react'
-import Davatar from '@davatar/react'
 import { ChevronDownIcon, LoginIcon } from '@heroicons/react/outline'
-import { Root } from '../components/Root'
 import { useState } from 'react'
-import { TokenList, schema } from '@uniswap/token-lists'
 import CoinList from '../assets/tokenlist.json'
-import { random } from 'lodash'
 
 const Tokens = CoinList.tokens
-const assetList = ['WETH', 'WBTC', 'USDC', 'USDT', 'DAI']
-const TokenSymbols = Tokens.reduceRight((prev: any, { symbol, logoURI }) => {
-  if (assetList.includes(symbol)) {
-    prev[symbol] = logoURI
-  }
-  return prev
-}, {})
+const assetList = ['WETH', 'ETH', 'WBTC', 'USDC', 'USDT', 'DAI']
+const TokenSymbols = Tokens.reduceRight(
+  (prev: any, { symbol, logoURI, address }) => {
+    if (assetList.includes(symbol)) {
+      prev[symbol] = { logoURI, address }
+    }
+    return prev
+  },
+  {}
+)
 
 enum DepositMode {
   WITHDRAW,
@@ -260,7 +257,8 @@ const BoxDepositBox = () => (
 )
 
 enum Assets {
-  eth = 'WETH',
+  weth = 'WETH',
+  eth = 'ETH',
   usdc = 'USDC',
   usdt = 'USDT',
   dai = 'DAI',
@@ -268,11 +266,12 @@ enum Assets {
 }
 
 const eth_2_assets = {
-  WETH: { text: 'WETH', symbol: './' },
-  USDC: { text: 'USDC', symbol: './' },
-  USDT: { text: 'USDT', symbol: './' },
-  DAI: { text: 'DAI', symbol: './' },
-  WBTC: { text: 'WBTC', symbol: './' }
+  WETH: { text: 'WETH' },
+  ETH: { text: 'ETH' },
+  USDC: { text: 'USDC' },
+  USDT: { text: 'USDT' },
+  DAI: { text: 'DAI' },
+  WBTC: { text: 'WBTC' }
 }
 
 const AssetMenu = () => {
@@ -301,7 +300,12 @@ const AssetMenu = () => {
               justifyContent="space-around"
               alignContent="center"
             >
-              <img src={TokenSymbols[selected]} alt={selected} width="20%" />
+              <img
+                style={{ borderRadius: '50%' }}
+                src={TokenSymbols[selected].logoURI}
+                alt={selected}
+                width="20%"
+              />
 
               {eth_2_assets[selected].text}
 
