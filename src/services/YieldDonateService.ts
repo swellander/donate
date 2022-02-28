@@ -5,7 +5,7 @@ import YieldDonateAbi from './abis/YieldDonateAbi.json'
 
 class YieldDonateService {
   contract: Contract
-  provider: Web3Provider
+  provider: Web3Provider | null
 
   constructor(provider: Web3Provider) {
     const signer: Signer = provider.getSigner()
