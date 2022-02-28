@@ -16,6 +16,9 @@ import { useTranslation } from '../utils/use-translation'
 import { NFT_MINT_CONTRACT } from '../utils/constants'
 import { ERC721Service } from '../services/ERC721Service'
 import { useWallet } from '../context/wallet-provider'
+import { useEffect, useState } from 'react'
+import { BigNumber } from '@ethersproject/bignumber'
+import { ethers } from 'ethers'
 
 const localisation = {
   en: {
@@ -30,9 +33,37 @@ const localisation = {
 const MintPage: NextPage = () => {
   const translate = useTranslation(localisation)
   const { account, library } = useWallet()
+  const [mintCount, setMintCount] = useState(1)
+  const [mintPrice, setMintPrice] = useState(BigNumber.from('0'))
+  const [totalMinted, setTotalMinted] = useState('0')
+  const [maxSupply, setMaxSupply] = useState('10000')
+  const [name, setName] = useState('')
 
-  function handleMintClick() {
-    const service = new ERC721Service(library, NFT_MINT_CONTRACT, account)
+  const service = new ERC721Service(library, NFT_MINT_CONTRACT!, account!)
+
+  useEffect(() => {
+    async function fetchData() {
+      const totalMinted = await service.totalSupply()
+      const maxSupply = await service.maxSupply()
+      const mintPrice = await service.mintPrice()
+      const name = await service.name()
+      setTotalMinted(totalMinted)
+      setMaxSupply(maxSupply)
+      setMintPrice(mintPrice)
+      setName(name)
+    }
+
+    if (library) {
+      fetchData()
+    }
+  }, [library])
+
+  async function handleMintClick() {
+    if (account) {
+      await service.mint(mintCount.toString())
+    } else {
+      console.log('connect wallet!!')
+    }
   }
 
   return (
@@ -49,7 +80,7 @@ const MintPage: NextPage = () => {
           <Box rounded="3xl" bg="white" overflow={'hidden'}>
             <Image src="/example-nft.png" alt="Example NFT" />
             <Flex justifyContent={'space-between'} p="4">
-              <Text fontWeight={'bold'}>NFT Name</Text>
+              <Text fontWeight={'bold'}>{name}</Text>
               <Text fontWeight={'bold'}>2 ETH</Text>
             </Flex>
           </Box>
@@ -72,7 +103,7 @@ const MintPage: NextPage = () => {
                 fontSize="20px"
                 display="inline-block"
               >
-                2 / 10000 minted
+                {totalMinted.toString()} / {maxSupply.toString()} minted
               </Text>
             </Box>
 
@@ -104,6 +135,7 @@ const MintPage: NextPage = () => {
                     bg="whiteAlpha.400"
                     p="12px"
                     style={{ display: 'flex', borderRadius: 16 }}
+                    value={mintCount}
                   >
                     <NumberDecrementStepper
                       bg="whiteAlpha.400"
@@ -116,6 +148,7 @@ const MintPage: NextPage = () => {
                       style={{
                         borderRadius: 12
                       }}
+                      onClick={() => setMintCount(Math.max(mintCount - 1, 1))}
                     >
                       <Text mt="-0.5">-</Text>
                     </NumberDecrementStepper>
@@ -139,6 +172,7 @@ const MintPage: NextPage = () => {
                       style={{
                         borderRadius: 12
                       }}
+                      onClick={() => setMintCount(Math.min(mintCount + 1, 100))}
                     >
                       <Text mt="-0.5">+</Text>
                     </NumberIncrementStepper>
@@ -160,7 +194,7 @@ const MintPage: NextPage = () => {
                   {translate('mintButton')}
                 </Button>
                 <Text fontSize="32px" fontWeight="bold">
-                  12 ETH
+                  {ethers.utils.formatEther(mintPrice.mul(mintCount))} ETH
                 </Text>
               </Flex>
             </VStack>
