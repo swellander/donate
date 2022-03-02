@@ -83,7 +83,7 @@ const DetailsBox = (props: Props) => {
       </Flex>
       {/* <Text fontSize={headerSizingXs} textAlign="center">
         {props.mode === DepositMode.DEPOSIT
-          ? `[DEPOSIT COPY]`
+          ? `Join the movement: deposit, yield, support!`
           : `Withdraw the exact amount of assets that you deposited`}
       </Text> */}
     </Flex>
