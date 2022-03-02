@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import type { NextPage } from 'next'
 import { Heading, Flex, Text, Box } from '@chakra-ui/layout'
+
 import { Button, Image, VStack, useToast, AspectRatio } from '@chakra-ui/react'
 import { InputNumber } from '../components/InputNumber'
 import { ERC721Service } from '../services/ERC721Service'
@@ -22,13 +23,13 @@ const localisation = {
 
 type BlockchainError = { message: string }
 
-const tokenAddress =
-  process.env.NEXT_PUBLIC_NFT_MINT_CONTRACT_ADDRESS ||
-  '0xFdfFB8f724322dAdb0FeC710c081E7fc3537DBAf'
+// Rinkeby
+// const tokenAddress = '0xFdfFB8f724322dAdb0FeC710c081E7fc3537DBAf'
 
-const successUrl = (id: string = '1') => {
-  return `https://testnets.opensea.io/assets/${tokenAddress}/${id}`
-}
+// Mainnet
+const tokenAddress = '0x5E96d69257b025d097863F3d69E9DcADb9a9810c'
+
+const collectionUrl = `https://opensea.io/collection/bubki-nfts`
 
 const MintPage: NextPage = () => {
   const translate = useTranslation(localisation)
@@ -54,18 +55,20 @@ const MintPage: NextPage = () => {
   }, [library, account])
 
   useEffect(() => {
-    if (account) {
-      contract?.isSaleActive()?.then((response) => {
-        setIsSaleActive(!!response)
-      })
-      contract?.totalSupply()?.then((response) => {
-        setTotalSupply(BigNumber.from(response).toNumber())
-      })
-      contract?.maxSupply()?.then((response) => {
-        setMaxSupply(BigNumber.from(response).toNumber())
-      })
+    async function fetchData() {
+      const totalMintedRes = await contract.totalSupply()
+      const maxSupplyRes = await contract.maxSupply()
+      const isSaleActiveRes = await contract.isSaleActive()
+      setTotalSupply(BigNumber.from(totalMintedRes).toNumber())
+      setMaxSupply(BigNumber.from(maxSupplyRes).toNumber())
+      setIsSaleActive(!!isSaleActiveRes)
+      console.log({ totalMintedRes, maxSupplyRes, isSaleActiveRes })
     }
-  }, [account, library, contract])
+
+    if (library && contract) {
+      fetchData()
+    }
+  }, [contract, library])
 
   useEffect(() => {
     setWalletConnected(!!account)
@@ -76,8 +79,6 @@ const MintPage: NextPage = () => {
 
     try {
       const res = await contract.resMint(mintCount)
-
-      // console.log({ res })
 
       // @todo - handle response. Show toast with link to tx? Or redirect to new view?
 
@@ -96,11 +97,11 @@ const MintPage: NextPage = () => {
               style={{
                 textDecoration: 'underline'
               }}
-              href={successUrl('2')}
+              href={collectionUrl}
               target="_blank"
               rel="noreferrer"
             >
-              View on OpenSea
+              View collection
             </a>
           </Box>
         )
@@ -156,27 +157,29 @@ const MintPage: NextPage = () => {
           </div>
           <div className="md:col-start-7 md:col-span-5">
             <VStack spacing={6} align="stretch">
-              <Box>
-                <Text
-                  as="span"
-                  px={4}
-                  py="5px"
-                  bg="whiteAlpha.400"
-                  rounded="xl"
-                  fontWeight="semibold"
-                  fontSize="20px"
-                  display="inline-block"
-                >
-                  {!isSaleActive && 'Available from March 4th, 2022'}
+              {isSaleActive && (
+                <Box>
+                  <Text
+                    as="span"
+                    px={4}
+                    py="5px"
+                    bg="whiteAlpha.400"
+                    rounded="xl"
+                    fontWeight="semibold"
+                    fontSize="20px"
+                    display="inline-block"
+                  >
+                    {!isSaleActive && 'Available from March 4th, 2022'}
 
-                  {isSaleActive && (
-                    <Text display="flex" alignItems="center" gap={2}>
-                      <Text fontWeight="black">{totalSupply} / 10,000</Text>
-                      <Text>minted</Text>
-                    </Text>
-                  )}
-                </Text>
-              </Box>
+                    {isSaleActive && (
+                      <Text display="flex" alignItems="center" gap={2}>
+                        <Text fontWeight="black">{totalSupply} / 10,000</Text>
+                        <Text>minted</Text>
+                      </Text>
+                    )}
+                  </Text>
+                </Box>
+              )}
 
               <Heading fontSize={48} lineHeight={1.33}>
                 Bubki NFTs
