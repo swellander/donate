@@ -189,7 +189,7 @@ const Home: NextPage = () => {
       </Flex>
 
       <Flex
-        className="4xl:!hidden"
+        className="opacity-20 lg:opacity-40 4xl:!hidden"
         position="fixed"
         bottom="0"
         right={['55%', '75%']}
@@ -198,7 +198,6 @@ const Home: NextPage = () => {
         maxW="238px"
         maxH="903px"
         zIndex={0}
-        opacity={[0.25, 0.25, 0.5]}
         userSelect="none"
       >
         <Image
