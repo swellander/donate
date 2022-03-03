@@ -92,7 +92,12 @@ const Home: NextPage = () => {
         blastConfetti(evt, true)
       }}
     >
-      <Flex direction="column" alignItems="center" textAlign="center">
+      <Flex
+        direction="column"
+        alignItems="center"
+        textAlign="center"
+        zIndex={2}
+      >
         <Flex direction="column" gap={16} align="center">
           <Heading>
             {translate('homepage-title')}{' '}
@@ -184,13 +189,17 @@ const Home: NextPage = () => {
       </Flex>
 
       <Flex
-        display={['none', 'none', 'none', 'none', 'block']}
+        className="4xl:!hidden"
         position="fixed"
         bottom="0"
-        right="55%"
-        h="85%"
-        w="700px"
-        mr="50px"
+        right={['55%', '75%']}
+        h={['100%']}
+        w="100%"
+        maxW="238px"
+        maxH="903px"
+        zIndex={0}
+        opacity={[0.25, 0.25, 0.5]}
+        userSelect="none"
       >
         <Image
           priority
@@ -198,6 +207,7 @@ const Home: NextPage = () => {
           alt="Statue"
           layout="fill"
           objectFit="contain"
+          objectPosition="bottom center"
         />
       </Flex>
     </Flex>
