@@ -10,6 +10,7 @@ import { confetti, blastConfetti } from '../utils/confetti'
 import axios from 'axios'
 import { useCoingeckoPrice } from '@usedapp/coingecko'
 import { headerSizingLg, headerSizingSm } from '../utils/sizing'
+import { usePageVisibility } from '../hooks/usePageVisibility'
 
 const RECEIVER_WALLET = '0x10E1439455BD2624878b243819E31CfEE9eb721C'
 const localization = require('../../public/locales/common.json')
@@ -19,6 +20,7 @@ const Home: NextPage = () => {
   const translate = useTranslation(localization)
   const etherPrice = useCoingeckoPrice('ethereum', 'usd')
   const etherPriceOrFallBack = etherPrice || 3000
+  const isVisible = usePageVisibility()
 
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -78,8 +80,10 @@ const Home: NextPage = () => {
       })
     }, 3000)
 
-    return () => clearInterval(interval)
-  }, [])
+    if (!isVisible) {
+      return () => clearInterval(interval)
+    }
+  }, [isVisible])
 
   return (
     <Flex
