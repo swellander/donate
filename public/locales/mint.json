@@ -3,6 +3,14 @@
     "mintButton": "Mint NFT",
     "connectWallet": "Connect Wallet",
     "p1": "Blending folk art-inspired motifs in a generative NFT project of 10,000 editions, Bubki aims to harness the power of web3 to rally material support for Ukrainian organizations at this pivotal moment.",
-    "p2": "100% of the proceeds and royalties will be donated to Unchain.fund."
+    "p2": "100% of the proceeds and royalties will be donated to Unchain.fund.",
+    "each": "each"
+  },
+  "fr": {
+    "mintButton": "Mint des NFT",
+    "connectWallet": "Connecter son wallet",
+    "p1": "En mixant différents motifs inspirés de l’art populaire ukrainien dans un projet NFT génératif de 10 000 exemplaires, Bubki cherche à mobiliser la communauté web3 afin de venir en aide aux organisations ukrainiennes en ces temps cruciaux.",
+    "p2": "100% des revenus et des royalties seront reversés à unchain.fund",
+    "each": "chaque"
   }
 }
