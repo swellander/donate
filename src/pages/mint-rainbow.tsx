@@ -34,7 +34,6 @@ const contractConfig = {
 const MintPage: NextPage = () => {
   const toast = useToast()
 
-  // Contract States
   const [{ data: networkData }] = useNetwork()
   const [{ data: connection }] = useConnect()
   const [{ data: account }] = useAccount()
@@ -44,7 +43,6 @@ const MintPage: NextPage = () => {
   const [totalSupply, setTotalSupply] = useState(0)
   const [maxSupply, setMaxSupply] = useState(5000)
 
-  // Contract i/o
   const [{ data: dataIsSaleActive, loading: loadingIsSaleActive }] =
     useContractRead(contractConfig, 'isSaleActive')
 
@@ -62,7 +60,7 @@ const MintPage: NextPage = () => {
     mintError &&
       toast({
         title: 'Uh oh.',
-        description: mintError,
+        description: `${mintError?.message || mintError}`,
         status: 'error',
         isClosable: true,
         position: 'bottom-right'
