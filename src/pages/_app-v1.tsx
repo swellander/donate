@@ -3,7 +3,6 @@ import type { AppProps } from 'next/app'
 import { ChakraProvider } from '@chakra-ui/react'
 import { DAppProvider } from '@usedapp/core'
 import { WalletProvider } from '../context/wallet-provider'
-import { WagmiWalletProvider } from '../context/wagmi-provider'
 import { Page } from '../components/Page'
 import { theme } from '../styles/theme'
 
@@ -24,17 +23,15 @@ import { theme } from '../styles/theme'
 function MyApp({ Component, pageProps }: AppProps) {
   // @ts-ignore
   return (
-    <WagmiWalletProvider>
-      <DAppProvider config={{}}>
-        <WalletProvider>
-          <ChakraProvider theme={theme}>
-            <Page>
-              <Component {...pageProps} />
-            </Page>
-          </ChakraProvider>
-        </WalletProvider>
-      </DAppProvider>
-    </WagmiWalletProvider>
+    <DAppProvider config={{}}>
+      <WalletProvider>
+        <ChakraProvider theme={theme}>
+          <Page>
+            <Component {...pageProps} />
+          </Page>
+        </ChakraProvider>
+      </WalletProvider>
+    </DAppProvider>
   )
 }
 

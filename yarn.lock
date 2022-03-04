@@ -7017,7 +7017,7 @@ wagmi-core@0.1.13:
     "@ethersproject/providers" "^5.5.1"
     eventemitter3 "^4.0.7"
 
-wagmi@^0.2.0:
+wagmi@^0.2.17:
   version "0.2.17"
   resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-0.2.17.tgz#c4d6664f2a830fe36b25cb9d96e38c75f8e5f006"
   integrity sha512-LKbQaH806eq7C46Bhj+7WNP97QszTH90fFz730Nzt7mt5qBhbwnzydJAKc/y7i/Out5Y2m4xaf8b6ULsM4bhkw==
