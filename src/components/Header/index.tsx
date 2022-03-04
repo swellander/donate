@@ -39,7 +39,9 @@ const ConnectWallet = () => {
   const translate = useTranslation(localization)
 
   return (
-    <NavButton onClick={activateBrowserWallet}>
+    <>
+      {/* @todo - temporary disable wallet connect */}
+      {/* <NavButton onClick={activateBrowserWallet}>
       {account ? (
         <>
           <Box>
@@ -53,7 +55,8 @@ const ConnectWallet = () => {
           <LoginIcon className="w-4 h-4" />
         </Flex>
       )}
-    </NavButton>
+    </NavButton> */}
+    </>
   )
 }
 
