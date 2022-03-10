@@ -1,12 +1,14 @@
 import { Flex, Heading, Text } from '@chakra-ui/layout'
-import { prizePool, ticketTokenAddress } from '../../../utils/poolTogether'
+import { ticketTokenAddress } from '../../../utils/poolTogether'
+import useStakingData from '../../../hooks/useStakingData'
 import { useEthers, useTokenBalance } from '@usedapp/core'
 import { BigNumber, utils } from 'ethers'
 import { FC, useEffect, useState } from 'react'
 import { useTranslation } from '../../../utils/use-translation'
+import { testnet, mainnet } from '@pooltogether/v4-pool-data'
+console.log({ testnet, mainnet })
 
 const translations = require('../../../../public/locales/stake.json')
-const multiSigAddress = '0x10E1439455BD2624878b243819E31CfEE9eb721C'
 
 const TotalStakedBox: FC = ({ children }) => {
   return (
@@ -27,6 +29,7 @@ export const DepositDetails = () => {
   const tokenBalance = useTokenBalance(ticketTokenAddress, account)
   const tokenBalanceOrZero = tokenBalance || 0
   const [totalYieldEarned, setTotalYieldEarned] = useState(0)
+  const { prizePool, multiSigAddress } = useStakingData()
 
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -50,8 +53,9 @@ export const DepositDetails = () => {
       }
     }
 
+    setTotalYieldEarned(0)
     getPrizePool()
-  }, [])
+  }, [prizePool])
 
   return (
     <Flex className="w-full max-w-3xl flex-col items-around justify-center gap-16">

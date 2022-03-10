@@ -1,22 +1,19 @@
 import { Box, Flex, Text } from '@chakra-ui/layout'
 import { Input, Button } from '@chakra-ui/react'
 import { AssetMenu } from './AssetMenu'
-import { useEthers, useTokenBalance } from '@usedapp/core'
+import { useTokenBalance } from '@usedapp/core'
+import useAcceptedNetwork from '../../hooks/useAcceptedNetwork'
+import useStakingData from '../../hooks/useStakingData'
 import { BigNumber, utils, ethers } from 'ethers'
 import React, { FC, useState } from 'react'
 import { User } from '@pooltogether/v4-client-js'
-import {
-  usdcTokenAddress,
-  prizePool,
-  ticketTokenAddress
-} from '../../utils/poolTogether'
+import { ticketTokenAddress } from '../../utils/poolTogether'
 import { useWallet } from '../../context/wallet-provider'
 
 import { useTranslation } from '../../utils/use-translation'
 const translations = require('../../../public/locales/stake.json')
 
 declare let window: any
-const multiSigAddress = '0x10E1439455BD2624878b243819E31CfEE9eb721C'
 
 export enum StakeMode {
   STAKE,
@@ -35,7 +32,8 @@ export const StakeView: FC<StakeUnstakeBoxProps> = ({ stakingMode }) => {
   const [sending, setSending] = useState(false)
 
   const { activateBrowserWallet, account } = useWallet()
-  const { chainId } = useEthers()
+  const { prizePool, usdcTokenAddress, multiSigAddress } = useStakingData()
+  const onAcceptedNetwork = useAcceptedNetwork()
   const tokenBalance = useTokenBalance(
     stakingMode === StakeMode.STAKE ? usdcTokenAddress : ticketTokenAddress,
     account
@@ -65,6 +63,7 @@ export const StakeView: FC<StakeUnstakeBoxProps> = ({ stakingMode }) => {
               const allowance = await user.getDepositAllowance()
 
               // Only ask for approval if necessary
+              console.log({ allowance, amountToUpdate })
               if (
                 allowance.allowanceUnformatted.lt(amountToUpdateUnformatted)
               ) {
@@ -118,7 +117,7 @@ export const StakeView: FC<StakeUnstakeBoxProps> = ({ stakingMode }) => {
     approvingText = translate('stake') || 'Approving...',
     sendingText = translate('stake') || 'Sending...'
   ) => {
-    if (chainId !== 1) {
+    if (!onAcceptedNetwork) {
       return connectText
     }
 
@@ -179,7 +178,7 @@ export const StakeView: FC<StakeUnstakeBoxProps> = ({ stakingMode }) => {
         height="80px"
         borderRadius="25px"
         onClick={stakeOrUnstake}
-        disabled={approving || sending || chainId !== 1}
+        disabled={approving || sending || !onAcceptedNetwork}
       >
         <Text fontSize={['xs', 'lg']}>{determineText()}</Text>
       </Button>

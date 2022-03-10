@@ -39,9 +39,7 @@ export default function Deposit() {
               color="white"
               fontSize={['2rem', '3rem']}
             >
-              {stakingMode === StakeMode.STAKE
-                ? translate('stake')
-                : translate('unstake')}
+              {stakingMode === StakeMode.STAKE ? 'Rake' : translate('unstake')}
             </Text>
           </Box>
 
